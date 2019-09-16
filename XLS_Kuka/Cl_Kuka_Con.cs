@@ -1,0 +1,185 @@
+﻿using System;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+
+/*
+ * 
+ This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * 
+ */
+
+namespace XLS_Kuka
+{
+    internal class Cl_Kuka_Con
+    {
+        private int MSG_id = 0;
+        public  TcpClient con;
+
+
+
+        public bool disconnection()
+        {
+            try
+            {
+
+                con.Close();
+                con.Dispose();
+                // con.Dispose();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+
+        }
+
+        public async
+        Task<bool>
+ connection(String ip, int connectTimeout)
+        {
+
+            con = new TcpClient();
+            var result = con.BeginConnect(ip, 7000, null, null);
+
+            var success = result.AsyncWaitHandle.WaitOne(connectTimeout);
+            return (bool)success;
+        }
+
+
+        public string
+  Read_var(string pVarName)
+        {
+
+            if (!con.Connected)
+            {
+                return "error";
+
+            }
+            else
+            {
+
+            }
+
+            try
+            {
+
+                byte[] PKT_var_name;
+                System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+                PKT_var_name = enc.GetBytes(pVarName);
+                byte[] PKT_name_length = new byte[2];
+                PKT_name_length[0] = Convert.ToByte((pVarName.Length >> 8) & 255);
+                PKT_name_length[1] = Convert.ToByte(pVarName.Length & 255);
+                Byte PKT_mode_is_read = 0;
+                byte[] PKT_req_len = new byte[2];
+                PKT_req_len[0] = Convert.ToByte(((pVarName.Length + 3) >> 8) & 255);
+                PKT_req_len[1] = Convert.ToByte(pVarName.Length + 3 & 255);
+                byte[] PKT_req_id = new byte[2];
+                MSG_id += 1;
+                PKT_req_id[0] = Convert.ToByte((MSG_id >> 8) & 255);
+                PKT_req_id[1] = Convert.ToByte(MSG_id + 3 & 255);
+
+                short total_pkt_length = (short)(pVarName.Length + 7);
+                byte[] REQ_packet = new byte[total_pkt_length];
+
+
+                REQ_packet[0] = PKT_req_id[0];
+                REQ_packet[1] = PKT_req_id[1];
+                REQ_packet[2] = PKT_req_len[0];
+                REQ_packet[3] = PKT_req_len[1];
+                REQ_packet[4] = PKT_mode_is_read;
+                REQ_packet[5] = PKT_name_length[0];
+                REQ_packet[6] = PKT_name_length[1];
+                PKT_var_name.CopyTo(REQ_packet, 7);
+
+
+                var stm = con.GetStream();
+                stm.Write(REQ_packet, 0, REQ_packet.Length);
+                stm.Flush();
+
+
+                byte[] RSP_packet = new byte[con.ReceiveBufferSize];
+                // stm.Read(RSP_packet, 0, (int)(con.ReceiveBufferSize));
+                var result = stm.BeginRead(RSP_packet, 0, (int)(con.ReceiveBufferSize), null, null);
+                bool data_recive = false;
+                var success = result.AsyncWaitHandle.WaitOne(200);
+                data_recive = (bool)success;
+
+                /*   Read Variable response packet structure example:
+               '  0  1     2  3      4         5  6          
+               ' xx xx  | 00 0A   | 00      | 00 06       | 35 35 33 39 39 33 | 00 01 01
+               '        |   10    |  0      |     6       | 5  5  3  9  9  3  |  0  1  1
+               'SAME AS | RSP LEN | READ=00 | VALUE LEN   | VALUE CHARS       |  TRAILER
+               'REQUEST | */
+
+                if (success)
+                {
+
+                    short RSP_val_len = (short)(((RSP_packet[5] << 8) & 255) + RSP_packet[6]);
+                    string RSP_val_payload;
+                    RSP_val_payload = Encoding.ASCII.GetString(RSP_packet, 7, RSP_val_len);
+                    int RSP_read_status = RSP_packet[7 + RSP_val_len + 2];
+
+
+
+
+                    bool Ok = (RSP_read_status > 0) && (RSP_val_len > 0);
+                    Ok = RSP_val_len > 0;
+                    Ok = RSP_packet[0] == PKT_req_id[0];
+                    Ok = RSP_packet[1] == PKT_req_id[1];
+                    if (Ok)
+                    {
+                        return RSP_val_payload;
+                    }
+                    else
+                    {
+
+                        return "Error";
+                    }
+
+
+
+                }
+
+                else
+                {
+
+                    return "error";
+
+                }
+
+
+            }
+
+            catch (Exception Ex)
+            {
+
+                return "error";
+
+            }
+
+        }
+
+
+    }
+
+
+
+
+
+}
+

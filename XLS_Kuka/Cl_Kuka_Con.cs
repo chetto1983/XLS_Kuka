@@ -70,10 +70,6 @@ namespace XLS_Kuka
                 return "error";
 
             }
-            else
-            {
-
-            }
 
             try
             {
@@ -137,10 +133,8 @@ namespace XLS_Kuka
 
 
 
-                    bool Ok = (RSP_read_status > 0) && (RSP_val_len > 0);
-                    Ok = RSP_val_len > 0;
-                    Ok = RSP_packet[0] == PKT_req_id[0];
-                    Ok = RSP_packet[1] == PKT_req_id[1];
+                    bool Ok = ((RSP_read_status > 0) && (RSP_val_len > 0)&(RSP_val_len > 0) && (RSP_packet[0] == PKT_req_id[0]) && (RSP_packet[1] == PKT_req_id[1]));
+                    
                     if (Ok)
                     {
                         return RSP_val_payload;
@@ -173,6 +167,115 @@ namespace XLS_Kuka
             }
 
         }
+
+
+        public bool Write_var(String pVarName, String pValue)
+        {
+            /*
+        'Write Variable request packet structure example:
+        '  0  1     2  3      4         5  6  
+        ' xx xx  | 00 0F   | 01       | 00 07        | 24 4F 56 5F 50 52 4F | 00 03   |     31 32 33
+        '        |   15    |  1       |     7        | $  O  V  _  P  R  O  |     3   |      1  2  3
+        ' REQ ID | REQ LEN | WRITE=1  | VAR NAME LEN | VAR NAME CHARS       | VAL LEN | VAL AS STRING
+        '(RANDOM)|
+        */
+
+
+            if (!con.Connected)
+            {
+
+                return false;
+            }
+
+            try
+            {
+
+                byte[] PKT_value;
+                System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+                PKT_value = enc.GetBytes(pValue);
+
+
+                byte[] PKT_value_len = new byte[2];
+                PKT_value_len[0] = Convert.ToByte((pValue.Length >> 8) & 255);
+                PKT_value_len[1] = Convert.ToByte(pValue.Length & 255);
+
+                byte[] PKT_var_name;
+                PKT_var_name = enc.GetBytes(pVarName);
+
+                byte[] PKT_name_length = new byte[2];
+                PKT_name_length[0] = Convert.ToByte((pVarName.Length >> 8) & 255);
+                PKT_name_length[1] = Convert.ToByte(pVarName.Length & 255);
+
+                byte PKT_mode_is_write = 1;
+
+                byte[] PKT_req_id = new byte[2];
+                MSG_id++;
+                PKT_req_id[0] = Convert.ToByte((MSG_id >> 8) & 255);
+                PKT_req_id[1] = Convert.ToByte(MSG_id + 3 & 255);
+
+                byte[] PKT_req_len = new byte[2];
+                PKT_req_len[0] = Convert.ToByte(((2 + PKT_var_name.Length + 2 + PKT_value.Length + 3) >> 8) & 255);
+                PKT_req_len[1] = Convert.ToByte((2 + PKT_var_name.Length + 2 + PKT_value.Length + 3) & 255);
+
+                byte[] REQ_packet = new byte[5 + 2 + PKT_var_name.Length + 2 + PKT_value.Length - 1];
+
+                REQ_packet[0] = PKT_req_id[0];
+                REQ_packet[1] = PKT_req_id[1];
+                REQ_packet[2] = PKT_req_len[0];
+                REQ_packet[3] = PKT_req_len[1];
+                REQ_packet[4] = PKT_mode_is_write;
+                REQ_packet[5] = PKT_name_length[0];
+                REQ_packet[6] = PKT_name_length[1];
+                PKT_var_name.CopyTo(REQ_packet, 7);
+                PKT_value_len.CopyTo(REQ_packet, 7 + PKT_var_name.Length);
+                PKT_value.CopyTo(REQ_packet, 7 + PKT_var_name.Length + PKT_value_len.Length - 1);
+
+
+                var ServerStream = con.GetStream();
+                ServerStream.Write(REQ_packet, 0, REQ_packet.Length);
+                ServerStream.Flush();
+                /*
+                'Write Variable response packet structure example:
+                '  0  1     2  3         4      5  6  
+                ' xx xx  | 00 0A   |    01   | 00 06       | 35 35 33 39 39 33   | 00  | 01 01
+                '        |    10   |     1   |     6       |  5  5  3  9  9  3   |  0  |  1  1
+                'SAME AS | RSP LEN | WRITE=1 | VALUE LEN   | WRITTEN VALUE CHARS | PAD | READ status 01 01 = OK
+                'REQUEST |
+                */
+
+
+                byte[] RSP_packet = new byte[con.ReceiveBufferSize];
+                var result = ServerStream.BeginRead(RSP_packet, 0, (int)(con.ReceiveBufferSize), null, null);
+                var success = result.AsyncWaitHandle.WaitOne(200);
+
+
+
+                if (success)
+                {
+
+                    short RSP_val_len = (short)(((RSP_packet[5] << 8) & 255) + RSP_packet[6]);
+                    string RSP_val_payload;
+                    RSP_val_payload = Encoding.ASCII.GetString(RSP_packet, 7, RSP_val_len);
+                    int RSP_read_status = RSP_packet[7 + RSP_val_len + 2];
+
+                    return ((RSP_read_status > 0) && (RSP_packet[0] == PKT_req_id[0]) && (RSP_packet[1] == PKT_req_id[1]));
+
+
+                }
+                else
+                {
+                    return false;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+
+            }
+        }
+
 
 
     }

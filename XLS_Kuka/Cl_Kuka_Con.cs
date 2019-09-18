@@ -21,6 +21,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+
+
+/*
+Read Request Message Format
+---------------------------
+2 bytes Id (uint16)
+2 bytes for content length (uint16)
+1 byte for read/write mode (0=Read)
+2 bytes for the variable name length (uint16)
+N bytes for the variable name to be read (ASCII)
+
+Write Request Message Format
+---------------------------
+2 bytes Id (uint16)
+2 bytes for content length (uint16)
+1 byte for read/write mode (1=Write)
+2 bytes for the variable name length (uint16)
+N bytes for the variable name to be written (ASCII)
+2 bytes for the variable value length (uint16)
+M bytes for the variable value to be written (ASCII)
+
+Answer Message Format
+---------------------------
+2 bytes Id (uint16)
+2 bytes for content length (uint16)
+1 byte for read/write mode (0=Read, 1=Write, 2=ReadArray, 3=WriteArray)
+2 bytes for the variable value length (uint16)
+N bytes for the variable value (ASCII)
+3 bytes for tail (000 on error, 011 on success)
+
+
+*/
+
 namespace XLS_Kuka
 {
     internal class Cl_Kuka_Con

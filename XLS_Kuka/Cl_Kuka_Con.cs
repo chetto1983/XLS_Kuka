@@ -166,7 +166,7 @@ namespace XLS_Kuka
 
 
 
-                    bool Ok = ((RSP_read_status > 0) && (RSP_val_len > 0)&(RSP_val_len > 0) && (RSP_packet[0] == PKT_req_id[0]) && (RSP_packet[1] == PKT_req_id[1]));
+                    bool Ok = ((RSP_read_status > 0) && (RSP_val_len > 0)&& (RSP_val_len > 0) && (RSP_packet[0] == PKT_req_id[0]) && (RSP_packet[1] == PKT_req_id[1]));
                     
                     if (Ok)
                     {

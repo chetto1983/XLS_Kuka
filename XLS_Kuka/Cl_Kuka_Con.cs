@@ -145,7 +145,7 @@ namespace XLS_Kuka
                 // stm.Read(RSP_packet, 0, (int)(con.ReceiveBufferSize));
                 var result = stm.BeginRead(RSP_packet, 0, (int)(con.ReceiveBufferSize), null, null);
                 bool data_recive = false;
-                var success = result.AsyncWaitHandle.WaitOne(200);
+                var success = result.AsyncWaitHandle.WaitOne(20);
                 data_recive = (bool)success;
 
                 /*   Read Variable response packet structure example:
@@ -279,7 +279,7 @@ namespace XLS_Kuka
 
                 byte[] RSP_packet = new byte[con.ReceiveBufferSize];
                 var result = ServerStream.BeginRead(RSP_packet, 0, (int)(con.ReceiveBufferSize), null, null);
-                var success = result.AsyncWaitHandle.WaitOne(200);
+                var success = result.AsyncWaitHandle.WaitOne(20);
 
 
 

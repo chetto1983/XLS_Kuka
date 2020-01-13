@@ -19,7 +19,7 @@
     <PublishUrl>C:\Users\portatile39\Desktop\Kuka_Xls\</PublishUrl>
     <InstallUrl />
     <TargetCulture>it</TargetCulture>
-    <ApplicationVersion>1.0.0.4</ApplicationVersion>
+    <ApplicationVersion>3.0.0.7</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -194,7 +194,7 @@
       <FlavorProperties GUID="{BAA0C2D2-18E2-41B9-852F-F413020CAA33}">
         <ProjectProperties HostName="Kuka_COMUNICATION.xlsx" HostPackage="{825100CF-0BA7-47EA-A084-DCF3308DAF74}" OfficeVersion="14.0" VstxVersion="4.0" ApplicationType="XLS" Language="CS" TemplatesPath="VSTOTemplates" DebugInfoExeName="C:\Program Files (x86)\Microsoft Office\Office14\excel.exe" DebugInfoCommandLine="&quot;[$OUTPUT]Kuka_COMUNICATION.xlsx&quot;" />
         <Host Name="Excel Document" Path=".\Kuka_COMUNICATION.xlsx" GeneratedCodeNamespace="XLS_Kuka" PublishedHash="A6EF10CB4FFEF561FDCF36421AE4803A7475E000">
-          <HostItem Name="Foglio1" Code="Foglio1.cs" CanonicalName="Foglio1" PublishedHash="502668CA87DD8E738E806B4D8C9A0387BD506CCA" DisplayName="Kuka" Blueprint="Foglio1.Designer.xml" GeneratedCode="Foglio1.Designer.cs" />
+          <HostItem Name="Foglio1" Code="Foglio1.cs" CanonicalName="Foglio1" PublishedHash="8C169E83C088980AF58A1AA2890B5B52A5F5F579" DisplayName="Kuka" Blueprint="Foglio1.Designer.xml" GeneratedCode="Foglio1.Designer.cs" />
           <HostItem Name="ThisWorkbook" Code="ThisWorkbook.cs" CanonicalName="ThisWorkbook" PublishedHash="5EFF5CE07DD52C0D5B3DF5BEB2324C3FAEE15BB8" Blueprint="ThisWorkbook.Designer.xml" GeneratedCode="ThisWorkbook.Designer.cs" />
         </Host>
       </FlavorProperties>

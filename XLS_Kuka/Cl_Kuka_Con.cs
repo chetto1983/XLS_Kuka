@@ -81,9 +81,8 @@ namespace XLS_Kuka
 
         }
 
-        public async
-        Task<bool>
- connection(String ip, int connectTimeout)
+        public bool
+ Connection(String ip, int connectTimeout)
         {
 
             con = new TcpClient();

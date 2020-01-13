@@ -36,10 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         System.Timers.Timer t;
         private object _lock = new object();
 
-        public static object TASK { get; private set; }
+     //   public static object TASK { get; private set; }
 
         private void Foglio1_Startup(object sender, System.EventArgs e)
         {
+            
             Bn_Start_stop.Visible = false;
             Bt_Con.BackColor = Color.Aquamarine;
             Bn_Start_stop.BackColor = Color.Aquamarine;
@@ -104,7 +105,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
             if (!connected)
             {
-                connected = await robot.connection(ip, 1000);
+                connected = robot.Connection(ip, 1000);
             }
             else 
 
@@ -142,8 +143,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 
                 int interval = (int)Globals.Foglio1.Cells[5, 7].Value;
-                t = new System.Timers.Timer(interval);
-                t.AutoReset = true;
+                t = new System.Timers.Timer(interval)
+                {
+                    AutoReset = true
+                };
                 t.Elapsed += new ElapsedEventHandler(Readvarasync);
                 t.Start();
                 Bn_Start_stop.Text = "Started";
@@ -166,20 +169,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         }
 
-        private async void Readvarasync(Object source, ElapsedEventArgs e)
+        private void Readvarasync(Object source, ElapsedEventArgs e)
         {
-               
-                t.Stop();
-                int counter_row = Globals.Foglio1.Tabella1.Range.Rows.Count;
-                int Start_counter = 5;
-                int pointer = 0;
+
+            t.Stop();
+            int counter_row = Globals.Foglio1.Tabella1.Range.Rows.Count;
+            int Start_counter = 5;
+            int pointer = 0;
 
 
 
-                tag = new string[counter_row];
+            tag = new string[counter_row];
 
-                for (int i = Globals.Foglio1.Rows.Row; i <= counter_row; i++)
-                {
+            for (int i = Globals.Foglio1.Rows.Row; i <= counter_row; i++)
+            {
                 try
                 {
 
@@ -195,24 +198,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 {
                     break;
                 }
-                }
+            }
 
 
 
-                value = new string[pointer];
-                for (int i = 0; i < pointer; i++)
-                {
+            value = new string[pointer];
+            for (int i = 0; i < pointer; i++)
+            {
 
                 value[i] = robot.Read_var(tag[i]);
-               
-
-                }
 
 
+            }
 
-                Start_counter = 5;
-                for (int i = 0; i < pointer; i++)
-                {
+
+
+            Start_counter = 5;
+            for (int i = 0; i < pointer; i++)
+            {
                 try
                 {
                     Globals.Foglio1.Cells[Start_counter, 3].value = value[i];
@@ -224,7 +227,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     break;
                 }
 
-                }
+            }
 
             if (start)
             {
@@ -232,7 +235,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-      
-        
+
+
     }
 }

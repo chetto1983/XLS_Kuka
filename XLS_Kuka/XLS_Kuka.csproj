@@ -19,7 +19,7 @@
     <PublishUrl>C:\Users\portatile39\Desktop\Kuka_Xls\</PublishUrl>
     <InstallUrl />
     <TargetCulture>it</TargetCulture>
-    <ApplicationVersion>3.0.0.7</ApplicationVersion>
+    <ApplicationVersion>4.0.0.1</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -132,14 +132,12 @@
     </Compile>
     <Compile Include="Cl_Kuka_Con.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskTimer.cs" />
     <Compile Include="ThisWorkbook.cs">
       <DependentUpon>Kuka_COMUNICATION.xlsx</DependentUpon>
     </Compile>
     <Compile Include="ThisWorkbook.Designer.cs">
       <DependentUpon>ThisWorkbook.Designer.xml</DependentUpon>
     </Compile>
-    <Compile Include="OncePerDayTimer.cs" />
     <EmbeddedResource Include="Foglio1.resx">
       <DependentUpon>Foglio1.cs</DependentUpon>
     </EmbeddedResource>
